@@ -17,7 +17,6 @@ class Wid extends StatefulWidget {
 class _Widgettate extends State<Wid> {
   int _currentIndex = 0;
   final List<Widget> _children = [
-    rest(),
     TestForm(),
     UserListApp(),
   ];
@@ -36,10 +35,6 @@ class _Widgettate extends State<Wid> {
         onTap: onTabTapped, // new
         currentIndex: _currentIndex, // new
         items: [
-          BottomNavigationBarItem(
-            icon: new Icon(Icons.home),
-            title: new Text('Home'),
-          ),
           BottomNavigationBarItem(
             icon: new Icon(Icons.file_copy),
             title: new Text('Formulario'),

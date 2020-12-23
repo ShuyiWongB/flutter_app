@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 
-class Graphic {
-  final int id;
-  final String title;
-
-  Graphic({this.id, this.title});
-
-  factory Graphic.fromJson(Map<String, dynamic> json) {
-    return Graphic(
-      id: json['id'],
-      title: json['title'],
+class Algo extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Grafico'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          child: Text('Aqui va un grafico'),
+          onPressed: () {
+            // Navigate to second route when tapped.
+          },
+        ),
+      ),
     );
   }
 }

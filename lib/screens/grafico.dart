@@ -18,7 +18,7 @@ class _restState extends State<rest> {
   Respuesta _respuesta;
 
   Future<Respuesta> createRespuesta(String paisuno,
-      String indicador, String annoinicio, String annotermino) async {
+      String indicador, String annoinicio, String annotermino, String paisdos) async {
     http.Response response = await http.post('http://127.0.0.1:8080/api/indicators/info', headers: {"Content-Type": "application/json"},
         body: jsonEncode(<String, String>{
           "indicatorCode": indicador,
@@ -26,7 +26,14 @@ class _restState extends State<rest> {
           "countryCode": paisuno,
           "startYear": annoinicio
         }),);
-    if (response.statusCode == 200) {
+    http.Response response2 = await http.post('http://127.0.0.1:8080/api/indicators/info', headers: {"Content-Type": "application/json"},
+      body: jsonEncode(<String, String>{
+        "indicatorCode": indicador,
+        "endYear": annotermino,
+        "countryCode": paisdos,
+        "startYear": annoinicio
+      }),);
+    if (response.statusCode == 200 && response2.statusCode == 200) {
       // Si la llamada al servidor fue exitosa, analiza el JSON
       print ("Conectado");
     } else {
@@ -54,13 +61,14 @@ class _restState extends State<rest> {
         ),
         floatingActionButton: FloatingActionButton(
             onPressed: () async {
-              final String paisuno = "CL";
-              final String indicador = "PIB";
-              final String annotermino = "2018";
-              final String annoinicio = "2018";
+              final String paisuno = widget.model.paisuno;
+              final String indicador = widget.model.indicador;
+              final String annotermino = widget.model.annotermino;
+              final String annoinicio = widget.model.annoinicio;
+              final String paisdos = widget.model.paisdos;
 
               final Respuesta respuesta = await createRespuesta(
-                  paisuno, indicador, annoinicio, annotermino);
+                  paisuno, indicador, annoinicio, annotermino, paisdos);
               setState(()
               {
                 _respuesta = respuesta;

@@ -15,7 +15,6 @@ void main() {
   runApp(new MaterialApp(
     title: 'Flutter App',
     routes: <String, WidgetBuilder>{
-      '/Home': (BuildContext context) => new rest(),
       '/Integrantes': (BuildContext context) => new UserListApp(),
       '/formulario' : (BuildContext context) => new TestForm(),
     },

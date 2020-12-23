@@ -1,8 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/screens/Graphic.dart';
 import 'package:flutter_app/screens/grafico.dart';
 import 'package:validators/validators.dart' as validator;
+import 'package:http/http.dart' as http;
 import 'model.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'result.dart';
+import 'respuesta.dart';
 
 class TestForm extends StatefulWidget {
   @override
@@ -14,7 +19,47 @@ class _TestFormState extends State<TestForm> {
   Model model = Model();
 
   String dropdownValue = 'PIB';
+  List<String> paises = ['AF','AL','DZ','AS','AD','AO','AG','AR','AM','AW','AU','AT','AZ','BS','BH','BD','BB','BY','BE','BZ','BJ','BM',
+    'BT','BO','BA','BW','BR','VG','BN','BG','BF','BI','CV','KH','CM','CA','KY','CF','TD','CL','CN','CO','KM','CD','CG',
+    'CR','CI','HR','CU','CW','CY','CZ','DK','DJ','DM','DO','EC','AE','SV','GQ','ER','EE','SZ','ET','FO','FJ','FI','FR','PF','GA','GM',
+    'GE','DE','GH','GI','GR','GL','GD','GU','GT','GN','GW','GY','HT','HN','HK','HU','IS','IN','ID','IR','IQ','IE','IM','IL','IT','JM',
+    'JP','JO','KZ','KE','KI','KP','KR','KW','KG','LA','LV','LB','LS','LR','LY','LI','LT','LU','MO','MG','MW','MY','MV',
+    'ML','MT','MH','MQ','MU','MX','FM','MD','MC','MN','ME','MA','MZ','MM','NA','NR','NP','NL','NC','NZ','NI','NE','NG','MK','MP','NO',
+    'OM','PK','PW','PA','PG','PY','PE','PH','PL','PT','PR','QA','RO','RU','RW','WS','SM','ST','SA','SN','RS','SC','SL','SG','MF','SK',
+    'SI','SB','SO','ZA','SS','ES','LK','KN','LC','MF','VC','SD','SR','SE','CH','SY','TJ','TZ','TH','TL','TG','TO','TT','TN','TR','TM',
+    'TC','TV','UG','UA','AE','GB','US','UY','UZ','VU','VE','VN','VI','YE','ZM','ZW'];
+  List<String> fechas = ['1971','1972','1973','1974','1975','1976','1977','1978','1979','1980','1981','1982','1983','1984','1985','1986',
+    '1987','1988','1989','1990','1991','1992','1993','1994','1995','1996','1997','1998','1999','2000','2001','2002','2003','2004','2005',
+    '2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020'];
+  String primerpais = '';
+  String fechainicio = '';
 
+  Respuesta _respuesta;
+
+  Future<Respuesta> createRespuesta(String paisuno,
+      String indicador, String annoinicio, String annotermino, String paisdos) async {
+    http.Response response = await http.post('http://127.0.0.1:8080/api/indicators/info', headers: {"Content-Type": "application/json"},
+      body: jsonEncode(<String, String>{
+        "indicatorCode": indicador,
+        "endYear": annotermino,
+        "countryCode": paisuno,
+        "startYear": annoinicio
+      }),);
+    http.Response response2 = await http.post('http://127.0.0.1:8080/api/indicators/info', headers: {"Content-Type": "application/json"},
+      body: jsonEncode(<String, String>{
+        "indicatorCode": indicador,
+        "endYear": annotermino,
+        "countryCode": paisdos,
+        "startYear": annoinicio
+      }),);
+    if (response.statusCode == 200 && response2.statusCode == 200) {
+      // Si la llamada al servidor fue exitosa, analiza el JSON
+      print ("Conectado");
+    } else {
+      // Si la llamada no fue exitosa, lanza un error.
+      print ("No se conecta");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,10 +87,14 @@ class _TestFormState extends State<TestForm> {
                       if (value.isEmpty) {
                         return 'Ingrese el pais uno';
                       }
-                      return null;
+                      if (paises.contains(value)) {
+                        return null;
+                      }
+                      return 'Pais incorrecto';
                     },
                     onSaved: (String value) {
-                      model.paisuno = value;
+                      primerpais = value;
+                      model.paisuno = primerpais;
                     },
                   ),
                 ),
@@ -58,7 +107,10 @@ class _TestFormState extends State<TestForm> {
                       if (value.isEmpty) {
                         return 'Ingrese el pais dos';
                       }
-                      return null;
+                      if (value != primerpais && paises.contains(value)) {
+                        return null;
+                      }
+                      return 'Pais incorrecto';
                     },
                     onSaved: (String value) {
                       model.paisdos = value;
@@ -73,9 +125,13 @@ class _TestFormState extends State<TestForm> {
           SizedBox(height: 10.0),
           DropdownButton<String>(
             value: dropdownValue,
-            isExpanded: true,
             icon: Icon(Icons.keyboard_arrow_down, size: 22),
-            underline: SizedBox(),
+            style: TextStyle(color: Colors.deepPurple),
+            hint: Text("Indicadores"),
+            underline: Container(
+              height: 3,
+              color: Colors.deepPurpleAccent,
+            ),
             items: <String>['PIB', 'IVA', 'SMI', 'TDA', 'IFL', 'PRF', 'TSC', 'DBI'].map((String value) {
               return new DropdownMenuItem<String>(
                 value: value,
@@ -107,10 +163,14 @@ class _TestFormState extends State<TestForm> {
                       if (value.isEmpty) {
                         return 'Ingrese el año de Inicio';
                       }
-                      return null;
+                      if (fechas.contains(value)) {
+                        return null;
+                      }
+                      return 'Fecha Incorrecta';
                     },
                     onSaved: (String value) {
-                      model.annoinicio = value;
+                      fechainicio = value;
+                      model.annoinicio = fechainicio;
                     },
                   ),
                 ),
@@ -123,7 +183,10 @@ class _TestFormState extends State<TestForm> {
                       if (value.isEmpty) {
                         return 'Ingrese el año de Termino';
                       }
-                      return null;
+                      if (value != fechainicio && fechas.contains(value)) {
+                        return null;
+                      }
+                      return 'Fecha Incorrecta';
                     },
                     onSaved: (String value) {
                       model.annotermino = value;
@@ -135,15 +198,30 @@ class _TestFormState extends State<TestForm> {
           ),
 
           RaisedButton(
-            color: Colors.blueAccent,
-            onPressed: () {
+            color: Colors.deepPurple,
+            onPressed: () async {
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
-                Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => rest(model: this.model)));}},
-            child: Text('Graficar', style: TextStyle(color: Colors.white,),
-            ),
-          )
+
+                final String paisuno = model.paisuno;
+                final String indicador = model.indicador;
+                final String annotermino = model.annotermino;
+                final String annoinicio = model.annoinicio;
+                final String paisdos = model.paisdos;
+
+                final Respuesta respuesta = await createRespuesta(
+                    paisuno, indicador, annoinicio, annotermino, paisdos);
+                setState(() {
+                  _respuesta = respuesta;
+                });
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => Algo()));
+              }},
+              child:
+              Text('Graficar', style: TextStyle(color: Colors.white,),
+              ),
+
+          ),
         ],
       ),
     );
@@ -179,4 +257,3 @@ class MyTextFormField extends StatelessWidget {
     );
   }
 }
-
