@@ -22,7 +22,7 @@ class Respuesta {
   Country country;
   String name;
   String unit;
-  String value;
+  int value;
   String year;
 
   factory Respuesta.fromJson(Map<String, dynamic> json) => Respuesta(

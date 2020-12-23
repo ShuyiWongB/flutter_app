@@ -1,14 +1,8 @@
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'Widget.dart';
-import './screens/home.dart';
 import './screens/Integrantes.dart';
-import './screens/formulario.dart';
-import './screens/grafico.dart';
 import './screens/form.dart';
 import 'dart:async';
-import 'package:intl/intl.dart';
-import './screens/formulario33.dart';
 
 
 void main() {

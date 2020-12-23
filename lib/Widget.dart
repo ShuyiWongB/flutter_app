@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/formulario.dart';
-import 'package:flutter_app/screens/grafico.dart';
-import 'placeholder_widget.dart';
-import './screens/home.dart';
 import './screens/Integrantes.dart';
 import './screens/form.dart';
-import './screens/formulario33.dart';
 
 class Wid extends StatefulWidget {
   @override

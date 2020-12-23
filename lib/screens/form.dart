@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/screens/Graphic.dart';
-import 'package:flutter_app/screens/grafico.dart';
 import 'package:validators/validators.dart' as validator;
 import 'package:http/http.dart' as http;
 import 'model.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'result.dart';
 import 'respuesta.dart';
+import 'Graphic.dart';
+import 'ModelGraphic.dart';
 
 class TestForm extends StatefulWidget {
   @override
@@ -36,6 +36,11 @@ class _TestFormState extends State<TestForm> {
 
   Respuesta _respuesta;
 
+  static var name;
+  static var valor;
+  static var year;
+
+
   Future<Respuesta> createRespuesta(String paisuno,
       String indicador, String annoinicio, String annotermino, String paisdos) async {
     http.Response response = await http.post('http://127.0.0.1:8080/api/indicators/info', headers: {"Content-Type": "application/json"},
@@ -60,6 +65,14 @@ class _TestFormState extends State<TestForm> {
       print ("No se conecta");
     }
   }
+
+  final List<ModelGraphic> data = [
+  ModelGraphic(
+  year: year,
+  name: name,
+  value: valor,
+  color: charts.ColorUtil.fromDartColor(Color(0xFF47505F)),
+  ),];
 
   @override
   Widget build(BuildContext context) {
@@ -213,9 +226,12 @@ class _TestFormState extends State<TestForm> {
                     paisuno, indicador, annoinicio, annotermino, paisdos);
                 setState(() {
                   _respuesta = respuesta;
+                  name = _respuesta.name;
+                  year = _respuesta.year;
+                  valor = _respuesta.value;
                 });
                 Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Algo()));
+                    context, MaterialPageRoute(builder: (context) => GraficoDeBarras(data: [],)));
               }},
               child:
               Text('Graficar', style: TextStyle(color: Colors.white,),
